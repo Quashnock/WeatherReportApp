@@ -9,19 +9,6 @@ function App() {
   const [forecast, setForecast] = useState(null);
 
 
-
-  const currentWeatherFetch = fetch("https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=4eac907fe887d92fab77396226c48e10");
-  const fiveDayForecast = fetch("https://api.openweathermap.org/data/2.5/forecast?q=" + city  + "&appid=4eac907fe887d92fab77396226c48e10");
-
-  Promise.all([currentWeatherFetch,fiveDayForecast])
-    .then(async (response) => {
-      const weatherResponse = await response[0].json();
-      const forecastResponse = await response[1].json();
-      setCurrentWeather(weatherResponse);
-      setCurrentWeather(forecastResponse);
-    })
-    .catch((err) => console.log(err))
-  
   console.log(currentWeather);
   console.log(forecast);
 
