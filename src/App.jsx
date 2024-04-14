@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import DigitalClock from './DigitalClock';
 import HourlyWeatherCard from './HourlyWeatherCard';
+import DailyWeatherCard from './DailyWeatherCard';
 
 function App() {
   
   const [userInput,setUserInput] = new useState("Seattle");
   const [currentWeather, setCurrentWeather] = new useState();
   const [hourlyWeather, setHourlyWeather] = new useState();
+  const [measurementType, setMeasurementType] = new useState("F");
 
 
   async function handleDefault(){
@@ -23,11 +25,21 @@ function App() {
   async function handleSubmit(e){
     e.preventDefault();
 
-    let response = await fetch("https://api.openweathermap.org/data/2.5/weather?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units=imperial")
+    let response = await fetch("https://api.openweathermap.org/data/2.5/weather?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units=" + (measurementType == "F" ? "imperial" : "metric"))
     setCurrentWeather(await response.json());
-    response = await fetch("https://api.openweathermap.org/data/2.5/forecast?q=Seattle&appid=4eac907fe887d92fab77396226c48e10&units=imperial")
+    response = await fetch("https://api.openweathermap.org/data/2.5/forecast?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units=" + (measurementType == "F" ? "imperial" : "metric"))
     setHourlyWeather(await response.json());
+    console.log(currentWeather);
     console.log(hourlyWeather);
+  }
+
+  let nextHours = []
+  for (let i = 0; i < 7 && hourlyWeather; i++){
+    nextHours.push(<HourlyWeatherCard data = {hourlyWeather.list[i]} measurementType = {measurementType} setMeasurementType={setMeasurementType} handleSubmit = {handleSubmit}/>)
+  }
+  let nextDays = []
+  for (let i = 8; i < 40 && hourlyWeather; i+=8){
+    nextDays.push(<DailyWeatherCard data = {hourlyWeather.list[i]} measurementType = {measurementType} setMeasurementType={setMeasurementType} handleSubmit = {handleSubmit}/>)
   }
 
 
@@ -47,8 +59,15 @@ function App() {
               </form>
             </div>
             <img class = " w-1/2" src = {!currentWeather ? "☀" : "http://openweathermap.org/img/w/" + currentWeather.weather[0].icon + ".png"}/>
-            <p class = "pb-7 text-white">21°C</p>
+            <button 
+              class = "mb-7 text-white"
+              onClick={(e)=> {
+                setMeasurementType(measurementType == "F" ? "C" : "F");
+                handleSubmit(e);
+              }}
+            >{!currentWeather ? "21°C" : currentWeather.main.temp + "°" + measurementType}</button>
             <hr class = "w-[80%]"></hr>
+            {nextDays}
           </div>
           <div class = "w-[75%] h-full flex flex-col justify-between">
             <div class = "w-full h-[10%]">
@@ -61,9 +80,8 @@ function App() {
               <div class = "w-full h-[10%] flex flex-row justify-center">
                 <hr class = "w-[93%]"></hr>
               </div>
-              <div class = "w-[90%] h-[60%] flex flex-row justify-center">
-
-                  <HourlyWeatherCard test = {"test"}/>
+              <div class = "w-[full] h-[60%] flex flex-row justify-center self-center">
+                {nextHours}
               </div>
             </div>
           </div>
