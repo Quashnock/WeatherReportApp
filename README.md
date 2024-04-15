@@ -1,8 +1,15 @@
-# React + Vite
+# WeatherReportApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Link: https://quashnock.github.io/WeatherReportApp/
 
-Currently, two official plugins are available:
+This project was meant to give me more practice using react and
+get me started with using APIs. This site uses the OpenWeather API
+(https://openweathermap.org/api) to get real time weather data 
+from searching for a city. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Note:
+  Not currently responsive, works best on desktop aspect ratio
+
+Citations:
+  Data and icons from OpenWeather API: https://openweathermap.org/api
+  Design by Mako Metivishvili: https://dribbble.com/shots/21260336-Weather-App-UI-UX-Design
