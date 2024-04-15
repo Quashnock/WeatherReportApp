@@ -16,7 +16,7 @@ function HourlyWeatherCard({data, measurementType, setMeasurementType, handleSub
                 class = " text-lg"
                 onClick={(e)=> {
                     setMeasurementType(measurementType == "F" ? "C" : "F");
-                    handleSubmit(e);
+                    handleSubmit(e,true);
                   }}
             >{data.main.temp + "°" + measurementType}</button>
         </div>

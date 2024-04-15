@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import DigitalClock from './DigitalClock';
 import HourlyWeatherCard from './HourlyWeatherCard';
 import DailyWeatherCard from './DailyWeatherCard';
+import ClearBackground from './assets/ClearBackground.jpg';
+import CloudyBackground from './assets/CloudsBackground.jpg';
+import RainBackground from './assets/RainBackground.jpg';
 
 function App() {
   
@@ -24,9 +27,9 @@ function App() {
 
   const controller = new AbortController();
   const remote = controller.signal;
-  function handleSubmit(e){
+  function handleSubmit(e, changeMeasure){
     e.preventDefault()
-    fetch("https://api.openweathermap.org/data/2.5/weather?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units="  + (measurementType == "C" ? "imperial" : "metric"))
+    fetch("https://api.openweathermap.org/data/2.5/weather?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units="  + (changeMeasure ? (measurementType == "C" ? "imperial" : "metric") : (measurementType == "C" ? "metric" : "imperial")))
     .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -34,12 +37,9 @@ function App() {
     return response.json();
   })
   .then(data1 => {
-    // Process data from the first API
     console.log('Data from API 1:', data1);
     setCurrentWeather(data1)
-
-    // Fetch data from the second API endpoint
-    return fetch("https://api.openweathermap.org/data/2.5/forecast?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units=" + (measurementType == "C" ? "imperial" : "metric"));
+    return fetch("https://api.openweathermap.org/data/2.5/forecast?q=" + userInput + "&appid=4eac907fe887d92fab77396226c48e10&units=" + (changeMeasure ? (measurementType == "C" ? "imperial" : "metric") : (measurementType == "C" ? "metric" : "imperial")));
   })
   .then(response => {
     if (!response.ok) {
@@ -48,7 +48,6 @@ function App() {
     return response.json();
   })
   .then(data2 => {
-    // Process data from the second API
     console.log('Data from API 2:', data2);
     setHourlyWeather(data2)
   })
@@ -66,11 +65,26 @@ function App() {
   for (let i = 8; i < 40 && hourlyWeather; i+=8){
     nextDays.push(<DailyWeatherCard data = {hourlyWeather.list[i]} measurementType = {measurementType} setMeasurementType={setMeasurementType} handleSubmit = {handleSubmit}/>)
   }
-
+  
+  let backgroundImage = ClearBackground;
+  if (currentWeather){
+    switch (currentWeather.weather[0].main){
+      case "Clear":
+        backgroundImage = ClearBackground;
+        break;
+      case "Clouds":
+        backgroundImage = CloudyBackground;
+        break;
+      case "Rain":
+        backgroundImage = RainBackground;
+    }
+  }
 
   return (
     <>
-        <div id = "upperDiv" class = " w-[100vw] h-[100vh] bg-cover flex justify-center absolute z-10 bg-[url('assets/ClearBackground.jpg')] ">
+      <div>
+        <img src = {backgroundImage} class = "absolute w-[100vw] h-[100vh] z-[-1]"></img>
+        <div id = "upperDiv" class = " w-[100vw] h-[100vh] bg-cover flex justify-center absolute z-10">
           <div class = "w-[90%] h-[90%] self-center border-white border-4 rounded-3xl flex flex-row">
             <div class = "w-[25%] h-full backdrop-blur-md flex flex-col items-center rounded-l-3xl border-r-[1px] border-opacity-25 border-white">
               <div class = "w-[60%] pt-[10%]">
@@ -88,7 +102,7 @@ function App() {
                 class = "mb-7 text-white"
                 onClick={(e)=> {
                   setMeasurementType(measurementType == "F" ? "C" : "F");
-                  handleSubmit(e);
+                  handleSubmit(e,true);
                 }}
               >{!currentWeather ? "21°C" : currentWeather.main.temp + "°" + measurementType}</button>
               <hr class = "w-[80%]"></hr>
@@ -112,6 +126,7 @@ function App() {
             </div>
           </div>
         </div>
+      </div>
     </>
   )
 }
